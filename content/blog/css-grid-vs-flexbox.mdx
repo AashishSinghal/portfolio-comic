@@ -1,0 +1,130 @@
+---
+title: "CSS Grid vs. Flexbox: When to Use Which"
+excerpt: "A practical comparison of CSS Grid and Flexbox with real-world layout examples."
+date: "2024-07-10"
+author: "Aashish Singhal"
+tags: ["CSS", "Web Design", "Flexbox", "CSS Grid"]
+---
+
+# CSS Grid vs. Flexbox
+
+Both CSS Grid and Flexbox are layout systems, but they solve different problems. Understanding when to reach for each one will level up your CSS game.
+
+## The Short Answer
+
+- **Flexbox** = one-dimensional layouts (row OR column)
+- **CSS Grid** = two-dimensional layouts (rows AND columns)
+
+But there's more nuance than that.
+
+## Flexbox — Content-First Layout
+
+Flexbox is ideal when you want content to dictate the layout. Items flex and wrap naturally:
+
+```css
+.nav {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.nav-item {
+  flex: 1;          /* Items share space equally */
+}
+
+.nav-logo {
+  flex: none;       /* Logo keeps its natural size */
+}
+```
+
+**Best for:** Navigation bars, toolbars, card rows, centering things, equal-height columns, and any layout where items should adapt to their content.
+
+## CSS Grid — Layout-First Design
+
+Grid is ideal when you want to define a layout structure and place items into it:
+
+```css
+.page {
+  display: grid;
+  grid-template-columns: 250px 1fr 300px;
+  grid-template-rows: auto 1fr auto;
+  grid-template-areas:
+    "header header header"
+    "sidebar main aside"
+    "footer footer footer";
+  min-height: 100vh;
+}
+
+.header { grid-area: header; }
+.sidebar { grid-area: sidebar; }
+.main { grid-area: main; }
+```
+
+**Best for:** Page layouts, dashboards, magazine-style layouts, image galleries, and any design where you need precise control over rows AND columns.
+
+## Real-World Comparison
+
+### Card Grid
+
+Grid wins here — you want consistent columns regardless of content:
+
+```css
+/* Grid — consistent columns */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Flexbox — items wrap but columns aren't guaranteed to align */
+.cards-flex {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+.cards-flex > * {
+  flex: 1 1 280px;
+}
+```
+
+### Centering Content
+
+Flexbox is simpler for basic centering:
+
+```css
+.center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+```
+
+Grid can do it too (and it's even shorter):
+
+```css
+.center {
+  display: grid;
+  place-items: center;
+}
+```
+
+## Use Both Together
+
+The real answer is: use both. Grid for the overall page structure, Flexbox for component internals:
+
+```css
+.page { display: grid; grid-template-columns: 1fr 3fr; }
+.card { display: flex; flex-direction: column; }
+.card-footer { display: flex; justify-content: space-between; margin-top: auto; }
+```
+
+## TL;DR
+
+| Feature | Flexbox | Grid |
+|---------|---------|------|
+| Dimensions | 1D | 2D |
+| Best for | Component layouts | Page layouts |
+| Content vs Layout | Content-driven | Layout-driven |
+| Alignment | Easy centering | Powerful placement |
+
+Master both, and you'll never struggle with CSS layout again.

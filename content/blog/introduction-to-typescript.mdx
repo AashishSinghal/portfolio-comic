@@ -1,0 +1,134 @@
+---
+title: "Introduction to TypeScript"
+excerpt: "Why TypeScript is worth learning and how it makes your JavaScript code more reliable."
+date: "2024-08-05"
+author: "Aashish Singhal"
+tags: ["TypeScript", "JavaScript", "Programming"]
+---
+
+# Introduction to TypeScript
+
+TypeScript is JavaScript with types. It catches errors at compile time instead of runtime, gives you better editor support, and makes your code self-documenting. Once you try it, you won't go back.
+
+## Why TypeScript?
+
+JavaScript is dynamically typed — anything goes until it crashes at runtime. TypeScript adds a type system on top:
+
+```typescript
+// JavaScript — this crashes at runtime
+function greet(user) {
+  return "Hello, " + user.name.toUpperCase();
+}
+greet(null); // 💥 TypeError: Cannot read property 'name' of null
+
+// TypeScript — this is caught at compile time
+function greet(user: { name: string }) {
+  return "Hello, " + user.name.toUpperCase();
+}
+greet(null); // ❌ Compile error: Argument of type 'null' is not assignable
+```
+
+## Basic Types
+
+TypeScript infers types automatically, but you can also be explicit:
+
+```typescript
+let name: string = "Aashish";
+let age: number = 25;
+let isActive: boolean = true;
+let skills: string[] = ["React", "TypeScript", "Node.js"];
+let tuple: [string, number] = ["version", 2];
+```
+
+## Interfaces — Describing Shapes
+
+Interfaces define the shape of objects. They're one of TypeScript's most powerful features:
+
+```typescript
+interface Project {
+  id: number;
+  name: string;
+  tags: string[];
+  url?: string;        // optional
+  readonly createdAt: Date; // can't be changed after creation
+}
+
+function displayProject(project: Project) {
+  console.log(`${project.name} — ${project.tags.join(", ")}`);
+}
+```
+
+## Generics — Reusable Type Logic
+
+Generics let you write functions and types that work with any type while maintaining type safety:
+
+```typescript
+function first<T>(arr: T[]): T | undefined {
+  return arr[0];
+}
+
+const num = first([1, 2, 3]);     // type: number | undefined
+const str = first(["a", "b"]);    // type: string | undefined
+```
+
+This is everywhere in React:
+
+```typescript
+const [count, setCount] = useState<number>(0);
+const ref = useRef<HTMLDivElement>(null);
+```
+
+## Union Types and Type Guards
+
+Union types let a value be one of several types:
+
+```typescript
+type Status = "loading" | "success" | "error";
+type Result = string | number;
+
+function format(value: string | number): string {
+  if (typeof value === "string") {
+    return value.toUpperCase(); // TypeScript knows it's a string here
+  }
+  return value.toFixed(2); // TypeScript knows it's a number here
+}
+```
+
+## TypeScript with React
+
+TypeScript and React are a perfect match:
+
+```tsx
+interface ButtonProps {
+  label: string;
+  variant?: "primary" | "secondary";
+  onClick: () => void;
+}
+
+function Button({ label, variant = "primary", onClick }: ButtonProps) {
+  return (
+    <button className={`btn btn-${variant}`} onClick={onClick}>
+      {label}
+    </button>
+  );
+}
+```
+
+Your editor will autocomplete props, catch typos, and warn you about missing required props.
+
+## Getting Started
+
+Add TypeScript to any project:
+
+```bash
+npm install -D typescript @types/node @types/react
+npx tsc --init
+```
+
+Or start a new Next.js project with TypeScript built in:
+
+```bash
+npx create-next-app@latest my-app --typescript
+```
+
+TypeScript has a learning curve, but it pays dividends in fewer bugs, better refactoring, and code that documents itself. Start strict from day one — you'll thank yourself later.

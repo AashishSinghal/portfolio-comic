@@ -1,0 +1,100 @@
+---
+title: "Understanding React Hooks"
+excerpt: "A deep dive into React Hooks — useState, useEffect, useContext, and building your own custom hooks."
+date: "2024-06-22"
+author: "Aashish Singhal"
+tags: ["React", "Hooks", "JavaScript"]
+---
+
+# Understanding React Hooks
+
+React Hooks revolutionized how we write React components. They let you use state and other React features in function components, eliminating the need for class components in most cases.
+
+## useState — Managing State
+
+The most fundamental hook. It returns a state value and a function to update it:
+
+```tsx
+const [count, setCount] = useState(0);
+const [name, setName] = useState("Aashish");
+const [items, setItems] = useState<string[]>([]);
+```
+
+State updates trigger re-renders. Always use the setter function — never mutate state directly.
+
+## useEffect — Side Effects
+
+`useEffect` runs after render and is your tool for side effects: API calls, subscriptions, DOM manipulation.
+
+```tsx
+useEffect(() => {
+  // Runs after every render
+  document.title = `Count: ${count}`;
+}, [count]); // Only re-run when count changes
+
+useEffect(() => {
+  const handler = (e: KeyboardEvent) => console.log(e.key);
+  window.addEventListener("keydown", handler);
+  return () => window.removeEventListener("keydown", handler); // Cleanup
+}, []); // Run once on mount
+```
+
+The dependency array is crucial — get it wrong and you'll have stale closures or infinite loops.
+
+## useContext — Sharing Data
+
+Skip the prop-drilling. `useContext` lets any component read a context value:
+
+```tsx
+const ThemeContext = createContext<"light" | "dark">("light");
+
+function App() {
+  return (
+    <ThemeContext.Provider value="dark">
+      <Toolbar />
+    </ThemeContext.Provider>
+  );
+}
+
+function ThemedButton() {
+  const theme = useContext(ThemeContext); // "dark"
+  return <button className={theme}>Click me</button>;
+}
+```
+
+## Custom Hooks — Reusable Logic
+
+The real power move. Extract component logic into reusable functions:
+
+```tsx
+function useLocalStorage<T>(key: string, initial: T) {
+  const [value, setValue] = useState<T>(() => {
+    const stored = localStorage.getItem(key);
+    return stored ? JSON.parse(stored) : initial;
+  });
+
+  useEffect(() => {
+    localStorage.setItem(key, JSON.stringify(value));
+  }, [key, value]);
+
+  return [value, setValue] as const;
+}
+
+// Usage
+const [theme, setTheme] = useLocalStorage("theme", "dark");
+```
+
+Custom hooks compose beautifully — build complex behavior from simple primitives.
+
+## Rules of Hooks
+
+Two rules you must follow:
+
+1. **Only call hooks at the top level** — never inside loops, conditions, or nested functions.
+2. **Only call hooks from React functions** — components or other custom hooks.
+
+These rules exist because React relies on the order of hook calls to correctly associate state with each hook.
+
+## Beyond the Basics
+
+Explore `useReducer` for complex state logic, `useMemo` and `useCallback` for performance optimization, and `useRef` for mutable values that don't trigger re-renders. The hooks ecosystem is rich and powerful.

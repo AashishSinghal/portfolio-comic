@@ -1,0 +1,87 @@
+---
+title: "Getting Started with Next.js"
+excerpt: "Learn the basics of Next.js and how to set up your first project with the App Router."
+date: "2024-05-15"
+author: "Aashish Singhal"
+tags: ["Next.js", "React", "Web Development"]
+---
+
+# Getting Started with Next.js
+
+Next.js has become the go-to framework for building React applications. Whether you're building a simple blog or a complex web application, Next.js provides the tools and conventions to make your development experience smooth and productive.
+
+## Why Next.js?
+
+Next.js offers several advantages over a plain React setup:
+
+- **Server-Side Rendering (SSR)** — Pages are rendered on the server, improving SEO and initial load performance.
+- **Static Site Generation (SSG)** — Pre-render pages at build time for blazing-fast delivery.
+- **App Router** — The new file-system based router with React Server Components support.
+- **API Routes** — Build your backend API directly within your Next.js project.
+- **Built-in Optimizations** — Image optimization, font loading, and script management out of the box.
+
+## Setting Up Your First Project
+
+Getting started is as simple as running a single command:
+
+```bash
+npx create-next-app@latest my-app --typescript --tailwind --app
+cd my-app
+npm run dev
+```
+
+This creates a new Next.js project with TypeScript, Tailwind CSS, and the App Router enabled.
+
+## Project Structure
+
+Here's what the default project structure looks like:
+
+```
+my-app/
+├── app/
+│   ├── layout.tsx    # Root layout
+│   ├── page.tsx      # Home page
+│   └── globals.css   # Global styles
+├── public/           # Static files
+├── next.config.ts    # Next.js configuration
+└── package.json
+```
+
+## Creating Your First Page
+
+In the App Router, every folder inside `app/` can contain a `page.tsx` file that becomes a route:
+
+```tsx
+// app/about/page.tsx
+export default function AboutPage() {
+  return (
+    <main>
+      <h1>About Me</h1>
+      <p>Welcome to my Next.js site!</p>
+    </main>
+  );
+}
+```
+
+Navigate to `/about` and you'll see your new page.
+
+## Server Components vs Client Components
+
+By default, all components in the App Router are **Server Components**. They run on the server and send HTML to the client — no JavaScript bundle required.
+
+When you need interactivity (state, effects, event handlers), add the `"use client"` directive:
+
+```tsx
+"use client";
+
+import { useState } from "react";
+
+export function Counter() {
+  const [count, setCount] = useState(0);
+  return <button onClick={() => setCount(count + 1)}>Count: {count}</button>;
+}
+```
+
+## What's Next?
+
+From here, explore data fetching with `fetch()` in Server Components, dynamic routes with `[slug]` folders, and middleware for authentication. The Next.js docs are excellent — dive in and start building!
