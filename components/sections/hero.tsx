@@ -1,20 +1,32 @@
 "use client";
 
+import { useState, useCallback, useMemo } from "react";
 import { motion } from "motion/react";
 import { Github, Linkedin, ArrowDown, Sparkles } from "lucide-react";
 import { socialLinks, aboutText } from "@/data/portfolio";
+import { LiquidText } from "@/components/ui/liquid-text";
+
+/* Deterministic speed lines — seeded to avoid hydration mismatch */
+function seededRandom(seed: number) {
+  const x = Math.sin(seed + 1) * 10000;
+  return x - Math.floor(x);
+}
 
 function SpeedLines() {
-  const lines = Array.from({ length: 60 }, (_, i) => {
-    const angle = (i * 6) * (Math.PI / 180);
-    const length = 800 + Math.random() * 400;
-    return {
-      x2: Math.cos(angle) * length,
-      y2: Math.sin(angle) * length,
-      opacity: 0.04 + Math.random() * 0.06,
-      width: 0.5 + Math.random() * 2,
-    };
-  });
+  const lines = useMemo(
+    () =>
+      Array.from({ length: 60 }, (_, i) => {
+        const angle = i * 6 * (Math.PI / 180);
+        const length = 800 + seededRandom(i * 7) * 400;
+        return {
+          x2: Math.cos(angle) * length,
+          y2: Math.sin(angle) * length,
+          opacity: 0.04 + seededRandom(i * 13) * 0.06,
+          width: 0.5 + seededRandom(i * 19) * 2,
+        };
+      }),
+    []
+  );
 
   return (
     <svg
@@ -38,15 +50,15 @@ function SpeedLines() {
 }
 
 export function HeroSection() {
+  const [liquidReady, setLiquidReady] = useState(false);
+  const handleReady = useCallback(() => setLiquidReady(true), []);
+
   return (
     <section
       id="hero"
       className="relative min-h-screen flex items-center overflow-hidden bg-paper dark:bg-dark-bg"
     >
-      {/* Speed lines background */}
       <SpeedLines />
-
-      {/* Halftone texture overlay */}
       <div className="halftone-bg absolute inset-0" />
 
       {/* Decorative action words */}
@@ -69,10 +81,10 @@ export function HeroSection() {
       </motion.span>
 
       {/* Main content */}
-      <div className="relative z-20 mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-32">
-        <div className="grid lg:grid-cols-[1fr,auto] gap-12 items-center">
+      <div className="relative z-20 mx-auto max-w-6xl w-full px-4 sm:px-6 lg:px-8 py-32">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:gap-12">
           {/* Left column */}
-          <div>
+          <div className="flex-1 min-w-0">
             {/* Chapter label */}
             <motion.div
               initial={{ opacity: 0, x: -30 }}
@@ -86,16 +98,54 @@ export function HeroSection() {
               <span className="h-0.5 w-12 bg-ink dark:bg-paper" />
             </motion.div>
 
-            {/* Big name */}
-            <motion.h1
+            {/* Big name — static text with 3D overlay on desktop */}
+            <motion.div
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="font-display text-6xl sm:text-7xl md:text-8xl lg:text-9xl leading-[0.9] tracking-wide text-ink dark:text-paper mb-8"
+              className="relative mb-8"
             >
-              <span className="block">AASHISH</span>
-              <span className="block text-action-red mt-1">SINGHAL</span>
-            </motion.h1>
+              {/* Static text — always visible on mobile, fades on md+ when 3D is ready */}
+              <h1
+                className={`font-display text-6xl sm:text-7xl md:text-8xl lg:text-9xl leading-[0.9] tracking-wide text-ink dark:text-paper md:transition-opacity md:duration-500 ${liquidReady ? "md:opacity-0" : ""}`}
+              >
+                <span className="block">AASHISH</span>
+                <span className="block text-action-red mt-1">SINGHAL</span>
+              </h1>
+              <span className="sr-only">Aashish Singhal</span>
+
+              {/* 3D displacement — md+ only */}
+              <div
+                className={`absolute inset-0 z-10 hidden md:block md:transition-opacity md:duration-500 ${liquidReady ? "md:opacity-100" : "md:opacity-0"}`}
+              >
+                <LiquidText
+                  text="AASHISH"
+                  font="Bangers, cursive"
+                  fontSize={300}
+                  lightColor="#0D0D0D"
+                  darkColor="#FFFEF2"
+                  displacementStrength={1.0}
+                  displacementRadius={2.0}
+                  tilt={0.12}
+                  zoom={3.5}
+                  textAlign="left"
+                  onReady={handleReady}
+                  className="h-[52%]"
+                />
+                <LiquidText
+                  text="SINGHAL"
+                  font="Bangers, cursive"
+                  fontSize={300}
+                  color="#FF2D2D"
+                  displacementStrength={1.0}
+                  displacementRadius={2.0}
+                  tilt={0.12}
+                  zoom={3.5}
+                  textAlign="left"
+                  className="h-[48%]"
+                />
+              </div>
+            </motion.div>
 
             {/* Speech bubble subtitle */}
             <motion.div
@@ -177,11 +227,10 @@ export function HeroSection() {
             initial={{ opacity: 0, scale: 0 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.7, type: "spring", stiffness: 200 }}
-            className="hidden lg:flex flex-col items-center"
+            className="hidden lg:flex flex-col items-center shrink-0"
           >
             <div className="animate-float">
-              <div className="relative w-40 h-40 flex items-center justify-center">
-                {/* Starburst shape via clip-path */}
+              <div className="relative w-44 h-44 flex items-center justify-center">
                 <div
                   className="absolute inset-0 bg-manga-yellow"
                   style={{
@@ -191,7 +240,7 @@ export function HeroSection() {
                 />
                 <div className="absolute inset-3 bg-paper dark:bg-dark-bg rounded-full comic-border flex items-center justify-center">
                   <div className="text-center">
-                    <span className="font-display text-4xl text-action-red block leading-none">
+                    <span className="font-display text-5xl text-action-red block leading-none">
                       4+
                     </span>
                     <span className="font-display text-sm tracking-wider text-ink dark:text-paper">
@@ -202,8 +251,7 @@ export function HeroSection() {
               </div>
             </div>
 
-            {/* Ben-Day dots decoration */}
-            <div className="ben-day-dots text-sky-blue w-32 h-32 rounded-full mt-4" />
+            <div className="ben-day-dots text-sky-blue w-28 h-28 rounded-full mt-4" />
           </motion.div>
         </div>
       </div>
